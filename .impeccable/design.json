@@ -1,0 +1,19 @@
+{
+  "name": "随波逐流 · Creator SaaS",
+  "mode": "operate",
+  "tokens": {
+    "canvas": "#f7f8fb",
+    "surface": "#ffffff",
+    "accent": "#6157d9",
+    "action": "#ef795e",
+    "status": "#1aa894",
+    "success": "#20a57f",
+    "radiusControl": "10px",
+    "radiusPanel": "18px",
+    "motion": "160-220ms"
+  },
+  "surfaces": {
+    "dashboard": "creation invitation + project signals + content stream",
+    "workflow": "creator brief + six-stage execution rail"
+  }
+}
