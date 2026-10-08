@@ -1,0 +1,5 @@
+Easel components and runtime are derived from ZJU-REAL/Easel.
+Source: https://github.com/ZJU-REAL/Easel
+Pinned commit: 4b9c03cf2129b6155595b66fc1e604546a3aa4ad
+License: Apache-2.0 (see LICENSE).
+CreatorOS modifications: isolated data/config/account roots, three publishing targets, capability gates, persistent workflow jobs, legacy data access, validation and tests.

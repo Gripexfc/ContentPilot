@@ -1,0 +1,69 @@
+# CreatorOS 体验审计（第一阶段）
+
+审计日期：2026-10-01（Asia/Shanghai）  
+审计范围：只读核对 `ContentPilot`（参考）与 `CreatorOS`（目标），以及本工作区可读的内容生产/平台 Skill。  
+本文件记录第一阶段审计结论；审计阶段没有修改 `ContentPilot` 或 `.easel`。随后开始的第一条 UX 垂直切片只补了总览快照 API、恢复计数和工作台本地输入自动保存，未把外部能力标为已完成。
+
+## 1. 证据边界
+
+| 对象 | 已读取的证据 | 结论边界 |
+| --- | --- | --- |
+| ContentPilot Git | `git log -1`：`0e9e9dd feat: expose cover and migration status`；工作树干净；`git ls-files` | 只把 HEAD 中存在的源码、文档和测试当作参考能力 |
+| ContentPilot 产品资料 | `README.md`、`PRODUCT.md`、`DESIGN.md`、`docs/MIGRATION_SCOPE.md` | 产品目标是公众号文章到本地/公众号草稿箱，未把其它平台当作已迁移能力 |
+| ContentPilot 后端 | `contentpilot/api/app.py`、`domain/models.py`、`storage/repository.py`、`integrations/wechat.py` | 公众号登录/会话检查/草稿/封面路径/提交/基础数据接口存在；真实账号行为仍需外部会话 |
+| ContentPilot 前端 | `web/frontend/src/App.tsx`、`api.ts`、`main.tsx`、CSS | 单一公众号编辑台，导航按钮和“查看全部”存在静态或未完成行为 |
+| ContentPilot 测试 | `tests/test_api.py`、`tests/test_repository.py` | 只覆盖 scope 和 JSON 草稿仓储，不足以证明浏览器登录、封面上传或后台写入 |
+| CreatorOS 后端 | `creatoros/api/app.py`、`domain/*`、`services/*`、`db/models.py`、`migrations/versions/*` | 本地任务/画像/简报/三平台模板/版本/记忆/热点/指标/连接器/公众号草稿都有本地契约 |
+| CreatorOS 前端 | `App.tsx`、`Pages.tsx`、`Workspace.tsx`、`ProfilePage.tsx`、`DraftCenter.tsx`、`api.ts` | 多入口可操作，但页面仍以单屏表单、结构化字段和本地 Mock 为主 |
+| CreatorOS 当前验证 | Python：CreatorOS `.venv/bin/pytest -q` 15 passed；前端 typecheck、4 个 Vitest、Vite build 通过；ContentPilot `.venv` 不存在，使用 CreatorOS `.venv` 加 `PYTHONPATH` 得 2 passed；两边前端 build 通过 | 这是静态/本地行为证据；没有真实 LLM、外部热点、账号权限、扫码或平台草稿回执证据 |
+
+状态词在本审计中的含义：
+
+- **已实现**：CreatorOS 有页面、API、模型和至少一个本地测试/可复现路径。
+- **部分实现**：主要路径存在，但关键字段、页面操作、错误恢复或测试仍缺口。
+- **只有模板**：确定性离线内容或展示模板，未接入真实生成器。
+- **只有 Mock**：本地状态机/演练替身，不访问真实平台。
+- **未实现**：没有可调用的页面/API/模型路径。
+- **外部阻塞**：需要真实凭据、账号、网络、验证码或平台权限，当前不能用本地证据确认。
+
+## 2. 用户工作流现状
+
+CreatorOS 当前可走通的本地链路是：建立画像 → 创建主题/链接/文本/热点任务 → 生成简报 → 用户确认 → 离线确定性三平台产物 → 单个平台字段编辑 → revision 与待确认记忆 → 内容库回读/Markdown、JSON、HTML 导出 → 公众号产物转入本地草稿 → 合法图片校验与隔离预览 → Mock 连接器提交失败/重试。
+
+链路中仍有四个体验断点：研究没有真实来源采集和逐条事实核验；生成页面没有按“输入—研究—简报—生成—适配—审阅—导出/草稿”呈现阶段状态；平台编辑器没有标题/开头/局部重写和差异视图；刷新后的任务虽可回读，但缺少统一的断点、自动保存、取消和重试状态。
+
+## 3. 体验与能力核对
+
+| 体验对象 | CreatorOS 当前证据 | 状态 | 主要缺口/风险 |
+| --- | --- | --- | --- |
+| 总览 | `Pages.tsx:OverviewPage` 展示作者、进行中任务、待确认记忆、最近任务；本轮补充 `GET /api/v1/overview` 快照、待核验来源、草稿、最近导入时间和读取时间 | 部分实现 | 总览已能暴露恢复计数，但仍缺可点击的待办聚合和任务级恢复游标 |
+| 导航 | `App.tsx` 有总览、画像、工作台、内容库、草稿、记忆、热点、分析、设置 9 个 hash 路由 | 已实现 | 路由可达不等于每个入口都具备完整业务闭环；需后续逐页走流程 |
+| 内容工作台 | `Workspace.tsx` 支持创建任务、追加 URL/文本/文件、简报编辑/确认、平台字段编辑、保存 revision | 部分实现 | 页面按平台卡片组织，研究和生成没有独立状态面板；缺少取消、重试、自动保存、版本差异和锁定事实 |
+| 画像 | `ProfilePage.tsx` + `creator_profile_versions`，支持版本、差异、恢复 | 已实现 | 画像完整度、字段级证据引用和确认前建议未形成体验门禁 |
+| 内容库 | `LibraryPage` 可按任务打开详情并回到工作台 | 部分实现 | 没有平台/支柱/来源/编辑状态/导出状态/草稿状态筛选，也不能完整反查画像→任务→来源→简报→产物→修改→记忆 |
+| 能力记忆 | `MemoryPage` 支持采纳、编辑、拒绝、撤销；模型有来源事件、置信度、scope、时间 | 已实现 | 页面没有展示来源实体、有效期/依据和撤销影响范围；只按事件 ID 截断展示 |
+| 热点 | `HotspotsPage` 可手动录入标题、链接、来源、摘要、事实状态、热度状态、证据，并转任务 | 部分实现 | 没有 RSS/官方源/BetterOPC 读取；没有抓取失败/刷新/人工核验队列；线索只能手动入池 |
+| 账号分析 | `AnalyticsPage` 支持 CSV/JSON 主动导入和结构性汇总；空数据显式限制 | 已实现（本地导入） | 官方账号 API 未接入；没有实验记录、单变量约束和图表化解释 |
+| 公众号草稿中心 | `DraftCenter.tsx` + `wechat_drafts`；本地草稿、来源三元组、编辑保护、封面、隔离 iframe、事件记录 | 已实现（本地） | 真实微信封面上传、草稿提交和回读外部阻塞；当前只有 Mock 连接器 |
+| 设置/连接器 | `SettingsPage` 显示 Mock 状态，可配置→连接→读取→提交/失败→重试 | 只有 Mock | 操作反馈可用，但“connected/read_succeeded/submit_succeeded”不能被解释为真实账号或真实提交 |
+
+## 4. 与目标 UX 重构的差异
+
+| 目标要求 | 当前 | 审计结论 |
+| --- | --- | --- |
+| 高级深色 SaaS 控制台 | `styles.css` 已有深海色、紫/青强调、响应式 rail、面板和状态色 | 已实现（视觉基线） |
+| 桌面/平板/390px | CSS 有 1080/720 断点，已有移动证据截图 | 部分实现：需第二阶段真实浏览器走 390px 关键流程 |
+| 输入→研究→简报→生成→三平台适配→审阅→导出/草稿 | 后端状态有 `idea → researching → briefed → drafting → adapted → reviewing → archived`；前端仍在工作台一屏混合展示 | 部分实现 |
+| 断点恢复、脏状态、自动保存提示 | hash 离开有 `beforeunload`/确认；草稿编辑有 dirty 保护 | 部分实现：没有自动保存、取消、统一失败重试和恢复游标 |
+| 标题/开头/局部重写、语气调整、锁定事实、保留修改 | 可编辑结构化 JSON 并提交整份 revision | 部分实现：无重写 API、字段级锁定、局部操作和差异视图 |
+| 三平台独立编辑器 | 后端字段独立；前端 `Workspace` 以 tab/card 切换 | 部分实现：独立字段存在，编辑体验和平台专属预览不足 |
+| 内容库多维筛选与反查 | 仅任务列表+详情 | 未实现 |
+| 热点证据/发布时间/抓取时间/热度/相关度/人工状态 | 数据模型已有字段和证据表；录入页可填部分字段 | 部分实现：无采集器和状态队列 |
+| 无数据不伪造增长结论 | `metric_analysis.py` 返回 limitations；页面显示暂无数据/结构性分析 | 已实现（边界） |
+| 记忆来源/时间/置信度/范围/确认操作 | 模型与操作齐全，页面仅简化展示 | 部分实现 |
+
+## 5. 本阶段结论
+
+CreatorOS 已经具备可继续工作的本地骨架，且没有把真实 LLM、外部平台或账号效果伪装成成功。第一阶段审计确认的优先级是：先把当前已有状态和证据在页面上显式化，再补研究与文章生成的真实可替换接口；不能直接把 `demo_deterministic` 或 Mock 状态机扩写成“全流程完成”。
+
+下一阶段进入实现前，应以 `docs/15-full-feature-parity.md` 的矩阵为唯一范围入口；每个垂直切片都要同时有页面、API、模型/迁移、测试和真实浏览器流程证据。

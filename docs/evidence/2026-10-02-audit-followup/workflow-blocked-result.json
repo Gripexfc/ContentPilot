@@ -1,0 +1,51 @@
+{
+  "observed_at": "2026-10-02T16:15:38.666746+08:00",
+  "kind": "synthetic_service_probe",
+  "external_calls": false,
+  "source": "creatoros/services/workflow_service.py",
+  "source_sha256": "cb810173830031f03fc411af9f9954d3ca129d0257a2e98370cef6d98c48e412",
+  "cases": [
+    {
+      "gateway_fixture": false,
+      "runner_fixture": "explicit BLOCKED text",
+      "runner_calls": 0,
+      "job_status": "blocked",
+      "stage_statuses": {
+        "discovery": "blocked",
+        "topic": "pending",
+        "master": "pending",
+        "adaptation": "pending",
+        "quality": "pending",
+        "archive": "pending"
+      },
+      "content_status": null,
+      "published": null,
+      "expected": {
+        "job_status": "blocked",
+        "runner_calls": 0
+      },
+      "matches_expected": true
+    },
+    {
+      "gateway_fixture": true,
+      "runner_fixture": "explicit BLOCKED text",
+      "runner_calls": 1,
+      "job_status": "blocked",
+      "stage_statuses": {
+        "discovery": "blocked",
+        "topic": "pending",
+        "master": "pending",
+        "adaptation": "pending",
+        "quality": "pending",
+        "archive": "pending"
+      },
+      "content_status": null,
+      "published": null,
+      "expected": {
+        "job_status": "blocked",
+        "runner_calls": 1
+      },
+      "matches_expected": true
+    }
+  ]
+}

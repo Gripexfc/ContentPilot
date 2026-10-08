@@ -1,0 +1,59 @@
+# Git 基线功能核对与本轮补齐
+
+核对日期：2026-09-30（Asia/Shanghai）  
+参考目录：`/Users/fc/Desktop/随波逐流/ContentPilot`  
+参考 Git 基线：`main` / `0e9e9dd2880227802843c24c5cce2fe0ed4772fe`  
+参考仓库状态：工作树干净，没有配置远程地址；`git ls-files` 未发现项目级 `LICENSE` 或 `NOTICE`。CreatorOS 没有复制参考仓库代码、提示词、素材、用户数据或凭据。
+
+## 参考项目实际能力
+
+ContentPilot 的 README、PRODUCT、DESIGN、API、模型、适配器和测试共同证明了一个“公众号单平台草稿工作台”：
+
+| 能力 | 参考项目实际状态 | CreatorOS 对应状态 |
+| --- | --- | --- |
+| 本地草稿 | JSON 文件保存公众号标题、摘要、作者、正文 HTML、首图和草稿状态 | 已升级为 SQLite 任务、简报、三平台产物和修订链；支持 Markdown/JSON/HTML 导出 |
+| 公众号会话 | 明确触发登录、会话状态和二维码文件，细节封装在 `WeChatAdapter` | 尚未接入；设置页显示未配置，不假装可连接 |
+| 草稿提交 | `POST /api/v1/drafts/{id}/publish` 调用公众号适配器，失败记录原因 | 尚未接入；默认不提交、不发布，外部行为不能在本地验收中伪造 |
+| 基础数据 | 适配器读取公众号发表/分析页 | 已有 CSV/JSON 主动导入、来源和观察时间；官方 API 尚未接入 |
+| 前端 | 公众号编辑/封面/提交边界 | 画像、工作台、热点、内容库、记忆、分析和设置均为独立页面 |
+
+因此，CreatorOS 不应为了“看起来一致”照搬公众号登录或发布代码。参考项目本身没有多平台、画像版本、热点证据或能力记忆，这些是新产品的新增边界。
+
+## 本轮发现的缺口与补齐
+
+| 缺口 | 处理 | 验证 |
+| --- | --- | --- |
+| 任务只能保存一段主题文字 | `ContentTaskCreate.input_type/input_metadata`；支持主题、链接、文章/会议记录和热点来源 | API 测试、页面从热点进入任务 |
+| 文件选择没有本地资产闭环 | `POST /tasks/{id}/inputs/file`，保存到 `data/assets/tasks/`，记录大小、类型、SHA-256、原名和提取状态；Markdown/TXT 自动保存 UTF-8 摘要 | API 上传测试；页面展示素材记录和原文件下载入口 |
+| 热点只能停留在热点页 | `POST /hotspots/{id}/task`，带来源摘要和原始链接创建任务 | 页面点击“以此创建内容任务”并进入工作台 |
+| 平台版本没有下载产物 | `GET /artifacts/{id}/export?format=markdown|json|html`，中文标题使用 UTF-8 文件名 | API Content-Disposition 和正文测试；页面提供导出按钮 |
+| 账号分析只有计数 | 独立 `metric_analysis` 描述性统计：平台/支柱分布、已导入数值的最小/最大/均值、观察明细和“本批最高观察值” | API 回归；没有行业基准、增长率或因果结论 |
+| CSV 简单 `split(',')` 会破坏引号和逗号 | 前端状态机解析带引号字段和换行 | 前端构建/typecheck；后续可补纯函数测试 |
+| 本地时间被当成 UTC | 观察时间输入使用本地 `datetime-local`，提交时才转 UTC | 页面验收时显示本地时间 |
+| 演练数据污染账号摘要 | `acceptance_test` 或 `excluded` 批次从表现统计排除但保留导入审计 | API 返回数据质量字段和限制说明 |
+
+## 当前完整流程证据
+
+在隔离目录 `/tmp/creatoros-audit-20260930/app-data` 启动最新服务并用浏览器走通：
+
+1. 创建画像 v1，保存身份、支柱、读者、表达、边界、三平台定位和证据说明。
+2. 手动保存热点线索，保持 `UNVERIFIED` 和“需要人工核验”。
+3. 点击“以此创建内容任务”，任务保留原始链接、来源摘要和 `hotspot_id`。
+4. 创建简报 v1，编辑事实列表形成 v2，确认后才允许生成。
+5. 生成公众号、小红书、抖音三个独立 `demo_deterministic` 版本；页面明确显示“本地模板 · 未接入 AI”。
+6. 公众号编辑器提供版本历史、用户修改说明、Markdown/JSON 导出；任务状态可继续进入审阅和归档。
+
+API/前端自动检查：后端 10 passed、前端 2 passed、TypeScript typecheck、Vite production build、迁移幂等均通过。
+
+## 仍然未实现或不能验证
+
+- 真实 LLM、图片生成、卡片图片导出、视频渲染和 FFmpeg；抖音目前只保存口播、字幕、分镜和 B-roll 建议。
+- RSS、BetterOPC、政府/监管/企业公告自动采集；热点目前只接受用户手动添加。
+- 公众号/小红书/抖音官方 API、登录、后台截图 OCR、草稿提交和发布；没有真实账号就不能验证这些外部行为。
+- 完整的 CSV 列映射和平台专有字段；未知列会保留，但含义仍需人工核对。
+- 用户确认后的记忆检索增强还未接入生成适配器；当前记忆只可查看、采纳、编辑、拒绝、撤销并保留来源事件。
+
+## 回滚
+
+代码回退到本轮前版本时，数据库需要同时回退 Alembic 到 `0003_sources_metrics`；本轮新增的 `task_inputs.metadata_json` 不能只删文件。验收数据使用隔离目录，可直接删除 `/tmp/creatoros-audit-20260930/app-data`；默认数据回退前先复制 `CreatorOS/data/creatoros.sqlite3`。本轮没有修改 ContentPilot 或 `.easel`。
+
