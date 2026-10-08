@@ -16,7 +16,7 @@
 - `tests/`、`web/frontend/src/lib/profile.test.ts`：后端服务/API/迁移测试和前端单元测试。
 - `data/.gitkeep`：独立数据目录占位。
 
-没有修改 `/Users/fc/Desktop/随波逐流/ContentPilot` 或 `.easel`，没有引入第三方源码，没有写入真实账号、令牌或外部平台数据。
+没有修改 `对照目录` 或 `.easel`，没有引入第三方源码，没有写入真实账号、令牌或外部平台数据。
 
 ## 数据模型与接口
 
@@ -41,7 +41,7 @@
 ## 如何启动
 
 ```bash
-cd /Users/fc/Desktop/随波逐流/CreatorOS
+cd CreatorOS
 make install
 make db-upgrade
 make backend       # 终端 A

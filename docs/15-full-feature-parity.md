@@ -1,26 +1,26 @@
-# ContentPilot → CreatorOS 与 Skills 全功能差异矩阵（第一阶段）
+# 对照实现 → CreatorOS 与 Skills 全功能差异矩阵（第一阶段）
 
-审计日期：2026-10-01（Asia/Shanghai）  
-参考 HEAD：`ContentPilot@0e9e9dd`（`feat: expose cover and migration status`）。  
-目标：`CreatorOS` 当前工作树（该目录没有独立 Git 元数据，因此不虚构目标 commit）。  
+审计日期：2026-10-01（Asia/Shanghai）
+参考 HEAD：`对照实现@0e9e9dd`（`feat: expose cover and migration status`）。
+目标：`CreatorOS` 当前工作树（该目录没有独立 Git 元数据，因此不虚构目标 commit）。
 范围：先做源码、API、模型、测试和 Skill 映射审计；随后记录第一条总览/工作台 UX 垂直切片的回填。本文不表示真实平台已连接或文章已发布。
 
-## 1. ContentPilot → CreatorOS
+## 1. 对照实现 → CreatorOS
 
-| ContentPilot 能力/契约 | 参考证据 | CreatorOS 对应页面/API/模型/测试 | 状态 | 迁移判断 |
+| 对照实现 能力/契约 | 参考证据 | CreatorOS 对应页面/API/模型/测试 | 状态 | 迁移判断 |
 | --- | --- | --- | --- | --- |
 | 工作台 | `web/frontend/src/App.tsx`：单一公众号编辑台、进度、下一步、最近草稿 | `App.tsx` 总壳；`Pages.tsx` 总览；`Workspace.tsx` 内容工作台；`GET /api/v1/overview`；`tests/test_api.py::test_overview_snapshot_exposes_recovery_counts` | 部分实现 | CreatorOS 已扩展为多阶段、多平台；总览已有计数快照，还需把恢复、研究、来源和待确认事项集中到工作台 |
 | 本地文章草稿 | `domain/models.py:Draft`；`storage/repository.py` JSON 文件；`GET/POST /api/v1/drafts` | `DraftCenter.tsx`；`wechat_drafts`/`wechat_draft_events`；`GET/POST/PATCH /api/v1/drafts`；`tests/test_drafts.py` | 已实现（本地） | 保留本地草稿，增加来源 revision 三元组和不可覆盖的已提交保护 |
-| 公众号状态/登录 | `GET /api/v1/account`、`POST /api/v1/account/login`、`GET /api/v1/account/login/status`；Playwright 持久会话和二维码状态文件 | `SettingsPage` 的 `wechat-oa` Mock；`GET /api/v1/connectors` 与 configure/connect/read；`connector_states`/`connector_events`；`tests/test_connectors.py` | 只有 Mock；外部阻塞 | 不复制 ContentPilot 浏览器登录实现；真实登录须单独适配器、凭据/扫码授权和回读证据 |
+| 公众号状态/登录 | `GET /api/v1/account`、`POST /api/v1/account/login`、`GET /api/v1/account/login/status`；Playwright 持久会话和二维码状态文件 | `SettingsPage` 的 `wechat-oa` Mock；`GET /api/v1/connectors` 与 configure/connect/read；`connector_states`/`connector_events`；`tests/test_connectors.py` | 只有 Mock；外部阻塞 | 不复制 对照实现 浏览器登录实现；真实登录须单独适配器、凭据/扫码授权和回读证据 |
 | 草稿字段 | `title` ≤64、`digest` ≤120、`author` ≤32、`content_html`、`cover_path`、状态 | `Draft`/`DraftCreate` 同等字段；`DraftCenter.tsx` 可编辑标题、作者、摘要、HTML；`tests/test_drafts.py` | 已实现（本地） | 后续补 HTML 清洗、正文内嵌图片和平台字段验证 |
-| 封面路径/预览 | ContentPilot 只保存 `cover_path` 文本；真实适配器上传图片 | `POST /drafts/{id}/cover`；PNG/JPEG/WebP 头部、尺寸和 10MB 校验；`GET .../cover`；隔离预览；`tests/test_drafts.py` | 已实现（本地）；真实上传外部阻塞 | 本地文件资产和微信后台上传必须保持两种状态，不能合并为“已上传” |
+| 封面路径/预览 | 对照实现 只保存 `cover_path` 文本；真实适配器上传图片 | `POST /drafts/{id}/cover`；PNG/JPEG/WebP 头部、尺寸和 10MB 校验；`GET .../cover`；隔离预览；`tests/test_drafts.py` | 已实现（本地）；真实上传外部阻塞 | 本地文件资产和微信后台上传必须保持两种状态，不能合并为“已上传” |
 | 明确提交 | `POST /drafts/{id}/publish` 调 `WeChatAdapter.publish_draft`，文档声明不群发 | `POST /drafts/{id}/submit` 只调 Mock Connector，页面需要用户点击 | 只有 Mock | 保留显式动作；真实草稿接口另做适配器，默认不提供群发路由 |
 | 提交失败/重试 | `WeChatError` 写 `failed`/`publish_error`；但只有简单状态覆盖 | `wechat_draft_events` 记录每次 submit；失败保存错误并可重试；已提交不可编辑，可 copy；`tests/test_drafts.py` | 已实现（Mock） | 真实平台需错误码映射、回执回读、超时与幂等证据 |
 | 账号读取 | `fetch_stats()` 解析发表记录、趋势和文章列表；`GET /api/v1/analytics` | `POST /connectors/{key}/read` 只推进 Mock 状态；CSV/JSON 指标走 `/metrics/imports`；`metric_observations`/`metric_summary`；`tests/test_api.py` | 部分实现（本地导入）；外部阻塞 | 真实账号读取不能用导入数据或 logged-in 状态替代 |
 | 数据存储 | JSON 文件：`data/drafts/*.json`；登录状态和二维码路径在 `data/login`；Playwright profile 在用户目录 | SQLite WAL + Alembic；`CreatorOS/data/assets` 保存文件；配置 `CREATOROS_DATA_DIR`/`CREATOROS_ASSET_DIR`；迁移 `0001–0007` | 已实现（本地） | CreatorOS 追踪关系更完整；需继续补 job/connector 凭据隔离和清理策略 |
 | API | `/status`、`/account`、`/account/login`、`/account/login/status`、`/drafts`、`/drafts/{id}/publish`、`/analytics` | FastAPI `/api/v1`：画像、任务、输入、简报、产物 revision、记忆、热点、指标、连接器、草稿和导出 | 已实现（本地契约） | 不是 API 一比一迁移；真实 WeChat API 行为仍未接入 |
 | 测试 | 2 个 Python 测试：status scope、JSON repository round-trip；前端无行为测试 | 15 个 CreatorOS Python 测试、3 个前端测试文件共 4 个测试；另有 API/构建/typecheck | 已实现（本地验证） | 测试数量不能替代真实浏览器/账号验收；需为每个垂直切片增加流程测试 |
-| 许可证/来源 | HEAD 工作树未发现项目级 `LICENSE`/`NOTICE`；README/PRODUCT/DESIGN 为产品资料 | CreatorOS `docs/04-provenance-and-licenses.md` 记录未复制第三方源码、当前不授予再分发许可 | 外部限制已记录 | 只借鉴行为边界；不复制 ContentPilot 源码、Skill 实现、Prompt 或视觉资源 |
+| 许可证/来源 | HEAD 工作树未发现项目级 `LICENSE`/`NOTICE`；README/PRODUCT/DESIGN 为产品资料 | CreatorOS `docs/04-provenance-and-licenses.md` 记录未复制第三方源码、当前不授予再分发许可 | 外部限制已记录 | 只借鉴行为边界；不复制 对照实现 源码、Skill 实现、Prompt 或视觉资源 |
 
 ## 2. 文章生成能力逐项核对
 
@@ -88,10 +88,10 @@
 
 ## 5. 验证结果与外部限制
 
-- ContentPilot Python：2 passed；前端 `npm run build` 通过；没有修改参考仓库。
+- 对照实现 Python：2 passed；前端 `npm run build` 通过；没有修改参考仓库。
 - CreatorOS Python：15 passed（使用项目 `.venv/bin/pytest`）；前端 typecheck 通过，Vitest 4 passed，Vite build 通过。
 - 当前未执行真实浏览器扫码、真实 LLM、真实热点 API、账号官方 API、真实微信封面上传/草稿写入、朱雀检测、媒体渲染和发布。
-- ContentPilot 未发现项目级 `LICENSE`/`NOTICE`；CreatorOS 只保留自己的来源边界记录，不把参考代码或第三方 Skill 实现复制进来。
+- 对照实现 未发现项目级 `LICENSE`/`NOTICE`；CreatorOS 只保留自己的来源边界记录，不把参考代码或第三方 Skill 实现复制进来。
 - 旧有截图只能证明之前记录的本地页面状态；本阶段没有用旧截图替代新的浏览器流程验收。
 
 ## 6. 实现顺序建议（作为第二阶段入口）

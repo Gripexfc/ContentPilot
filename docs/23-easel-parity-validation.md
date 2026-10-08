@@ -1,9 +1,9 @@
 # Easel 能力迁移验收记录
 
-日期：2026-10-01（Asia/Shanghai）  
-项目：`/Users/fc/Desktop/随波逐流/CreatorOS`  
-官方只读基线：`https://github.com/ZJU-REAL/Easel`，checkout `4b9c03cf2129b6155595b66fc1e604546a3aa4ad`，许可 Apache-2.0。  
-审计矩阵：[`docs/22-easel-official-parity-matrix.md`](22-easel-official-parity-matrix.md)。官方参考 checkout 和 `/Users/fc/Desktop/随波逐流/.easel` 均未修改。
+日期：2026-10-01（Asia/Shanghai）
+项目：`CreatorOS`
+官方只读基线：`https://github.com/ZJU-REAL/Easel`，checkout `4b9c03cf2129b6155595b66fc1e604546a3aa4ad`，许可 Apache-2.0。
+审计矩阵：[`docs/22-easel-official-parity-matrix.md`](22-easel-official-parity-matrix.md)。官方参考 checkout 和 `隔离运行目录` 均未修改。
 
 ## 本轮目标
 

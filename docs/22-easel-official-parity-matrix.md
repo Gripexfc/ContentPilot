@@ -1,8 +1,8 @@
 # Easel 能力迁移差异矩阵
 
-日期：2026-10-01（Asia/Shanghai）  
-官方基线：`ZJU-REAL/Easel`，当前只读官方 checkout `4b9c03cf2129b6155595b66fc1e604546a3aa4ad`。旧审计使用 `3fe2d99`，本轮以当前 checkout 校正。   
-待验收实现：`/Users/fc/Desktop/随波逐流/CreatorOS`（默认页面为 CreatorOS 自有 UI，官方项目只读）  
+日期：2026-10-01（Asia/Shanghai）
+官方基线：`ZJU-REAL/Easel`，当前只读官方 checkout `4b9c03cf2129b6155595b66fc1e604546a3aa4ad`。旧审计使用 `3fe2d99`，本轮以当前 checkout 校正。
+待验收实现：`CreatorOS`（默认页面为 CreatorOS 自有 UI，官方项目只读）
 只读依据：`/private/tmp/easel-official-audit-20261001/inventory.md`、`/private/tmp/easel-browser-acceptance-20261001.md`
 
 状态含义：`CONFIRMED` 表示当前行为与官方目标一致；`PARTIAL` 表示有数据或页面基础但行为不等价；`BLOCKED` 表示接口/页面有入口但需要未接入的外部能力；`NOT_IMPLEMENTED` 表示当前没有可执行实现。

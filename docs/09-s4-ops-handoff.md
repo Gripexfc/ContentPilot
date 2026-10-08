@@ -22,7 +22,7 @@
 ## 启动与测试
 
 ```bash
-cd /Users/fc/Desktop/随波逐流/CreatorOS
+cd CreatorOS
 make db-upgrade
 make backend       # 另一个终端运行 make frontend
 make test
@@ -42,4 +42,4 @@ make lint
 
 停止本地服务后，删除或迁移 `CreatorOS/data/creatoros.sqlite3` 到备份目录，再从旧版本启动；代码回滚到 0003 时需同时执行 Alembic downgrade `0004_input_metadata`，不能只删除字段。测试使用临时 SQLite，不会写入默认数据目录。
 
-没有修改 `/Users/fc/Desktop/随波逐流/ContentPilot` 或 `.easel`，没有引入第三方源码、密钥、Cookie、二维码、令牌或外部账号数据。
+没有修改 `对照目录` 或 `.easel`，没有引入第三方源码、密钥、Cookie、二维码、令牌或外部账号数据。

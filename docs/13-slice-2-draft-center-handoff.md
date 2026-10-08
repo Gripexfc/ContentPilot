@@ -35,4 +35,4 @@
 
 ## 回滚
 
-本轮修改前快照保存在 `/tmp/creatoros-pre-draft-center-20260930`（不含数据、凭据和依赖）。代码回退时可恢复该快照，或将 Alembic 回退到 `0006_wechat_drafts` 并移除 `0007_draft_sources`、来源转入路由和前端入口；隔离验收目录可直接删除。ContentPilot 与 `.easel` 未修改。
+本轮修改前快照保存在 `/tmp/creatoros-pre-draft-center-20260930`（不含数据、凭据和依赖）。代码回退时可恢复该快照，或将 Alembic 回退到 `0006_wechat_drafts` 并移除 `0007_draft_sources`、来源转入路由和前端入口；隔离验收目录可直接删除。对照实现 与 `.easel` 未修改。

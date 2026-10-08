@@ -1,21 +1,21 @@
 # CreatorOS 体验审计（第一阶段）
 
-审计日期：2026-10-01（Asia/Shanghai）  
-审计范围：只读核对 `ContentPilot`（参考）与 `CreatorOS`（目标），以及本工作区可读的内容生产/平台 Skill。  
-本文件记录第一阶段审计结论；审计阶段没有修改 `ContentPilot` 或 `.easel`。随后开始的第一条 UX 垂直切片只补了总览快照 API、恢复计数和工作台本地输入自动保存，未把外部能力标为已完成。
+审计日期：2026-10-01（Asia/Shanghai）
+审计范围：只读核对 `对照实现`（参考）与 `CreatorOS`（目标），以及本工作区可读的内容生产/平台 Skill。
+本文件记录第一阶段审计结论；审计阶段没有修改 `对照实现` 或 `.easel`。随后开始的第一条 UX 垂直切片只补了总览快照 API、恢复计数和工作台本地输入自动保存，未把外部能力标为已完成。
 
 ## 1. 证据边界
 
 | 对象 | 已读取的证据 | 结论边界 |
 | --- | --- | --- |
-| ContentPilot Git | `git log -1`：`0e9e9dd feat: expose cover and migration status`；工作树干净；`git ls-files` | 只把 HEAD 中存在的源码、文档和测试当作参考能力 |
-| ContentPilot 产品资料 | `README.md`、`PRODUCT.md`、`DESIGN.md`、`docs/MIGRATION_SCOPE.md` | 产品目标是公众号文章到本地/公众号草稿箱，未把其它平台当作已迁移能力 |
-| ContentPilot 后端 | `contentpilot/api/app.py`、`domain/models.py`、`storage/repository.py`、`integrations/wechat.py` | 公众号登录/会话检查/草稿/封面路径/提交/基础数据接口存在；真实账号行为仍需外部会话 |
-| ContentPilot 前端 | `web/frontend/src/App.tsx`、`api.ts`、`main.tsx`、CSS | 单一公众号编辑台，导航按钮和“查看全部”存在静态或未完成行为 |
-| ContentPilot 测试 | `tests/test_api.py`、`tests/test_repository.py` | 只覆盖 scope 和 JSON 草稿仓储，不足以证明浏览器登录、封面上传或后台写入 |
+| 对照实现 Git | `git log -1`：`0e9e9dd feat: expose cover and migration status`；工作树干净；`git ls-files` | 只把 HEAD 中存在的源码、文档和测试当作参考能力 |
+| 对照实现 产品资料 | `README.md`、`PRODUCT.md`、`DESIGN.md`、`docs/MIGRATION_SCOPE.md` | 产品目标是公众号文章到本地/公众号草稿箱，未把其它平台当作已迁移能力 |
+| 对照实现 后端 | `baseline-module/api/app.py`、`domain/models.py`、`storage/repository.py`、`integrations/wechat.py` | 公众号登录/会话检查/草稿/封面路径/提交/基础数据接口存在；真实账号行为仍需外部会话 |
+| 对照实现 前端 | `web/frontend/src/App.tsx`、`api.ts`、`main.tsx`、CSS | 单一公众号编辑台，导航按钮和“查看全部”存在静态或未完成行为 |
+| 对照实现 测试 | `tests/test_api.py`、`tests/test_repository.py` | 只覆盖 scope 和 JSON 草稿仓储，不足以证明浏览器登录、封面上传或后台写入 |
 | CreatorOS 后端 | `creatoros/api/app.py`、`domain/*`、`services/*`、`db/models.py`、`migrations/versions/*` | 本地任务/画像/简报/三平台模板/版本/记忆/热点/指标/连接器/公众号草稿都有本地契约 |
 | CreatorOS 前端 | `App.tsx`、`Pages.tsx`、`Workspace.tsx`、`ProfilePage.tsx`、`DraftCenter.tsx`、`api.ts` | 多入口可操作，但页面仍以单屏表单、结构化字段和本地 Mock 为主 |
-| CreatorOS 当前验证 | Python：CreatorOS `.venv/bin/pytest -q` 15 passed；前端 typecheck、4 个 Vitest、Vite build 通过；ContentPilot `.venv` 不存在，使用 CreatorOS `.venv` 加 `PYTHONPATH` 得 2 passed；两边前端 build 通过 | 这是静态/本地行为证据；没有真实 LLM、外部热点、账号权限、扫码或平台草稿回执证据 |
+| CreatorOS 当前验证 | Python：CreatorOS `.venv/bin/pytest -q` 15 passed；前端 typecheck、4 个 Vitest、Vite build 通过；对照实现 `.venv` 不存在，使用 CreatorOS `.venv` 加 `PYTHONPATH` 得 2 passed；两边前端 build 通过 | 这是静态/本地行为证据；没有真实 LLM、外部热点、账号权限、扫码或平台草稿回执证据 |
 
 状态词在本审计中的含义：
 

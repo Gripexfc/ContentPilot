@@ -30,7 +30,7 @@
 ## 启动与测试
 
 ```bash
-cd /Users/fc/Desktop/随波逐流/CreatorOS
+cd CreatorOS
 make install
 make test
 make lint

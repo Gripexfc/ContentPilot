@@ -90,11 +90,11 @@ from creatoros.adapters.wechat import WeChatAdapterError, WeChatBrowserAdapter
 from creatoros.services.draft_service import DraftCoverMissing, DraftError, DraftNotFound, _read as draft_read, cover_path, copy_draft, create_draft, create_draft_from_artifact, detail as draft_detail, list_drafts, set_cover, submit_draft as submit_wechat_draft, update_draft
 
 
-class ContentPilotDraftCreate(BaseModel):
-    """Payload accepted by the original ContentPilot API.
+class LegacyDraftCreate(BaseModel):
+    """Payload accepted by the original legacy workbench API.
 
     CreatorOS keeps its richer draft model, but this compatibility surface
-    must accept the exact fields sent by the ContentPilot workbench, including
+    must accept the exact fields sent by the legacy workbench, including
     a user-selected cover path.
     """
 
@@ -105,8 +105,8 @@ class ContentPilotDraftCreate(BaseModel):
     cover_path: str = ""
 
 
-class ContentPilotDraftRead(BaseModel):
-    """The response shape used by ContentPilot's single-page editor."""
+class LegacyDraftRead(BaseModel):
+    """The response shape used by legacy workbench's single-page editor."""
 
     id: str
     title: str
@@ -120,7 +120,7 @@ class ContentPilotDraftRead(BaseModel):
     submitted_at: str = ""
     publish_error: str = ""
     # Keep the richer CreatorOS fields on this shared route for existing API
-    # clients.  ContentPilot simply ignores fields it does not use.
+    # clients.  legacy workbench simply ignores fields it does not use.
     cover_url: Optional[str] = None
     remote_id: Optional[str] = None
     submission_receipt: Optional[dict[str, object]] = None
@@ -129,8 +129,8 @@ class ContentPilotDraftRead(BaseModel):
     source_revision_id: Optional[str] = None
 
 
-def _contentpilot_draft(value: dict[str, object]) -> dict[str, object]:
-    """Normalize CreatorOS nullable draft fields to ContentPilot defaults."""
+def _legacy_draft(value: dict[str, object]) -> dict[str, object]:
+    """Normalize CreatorOS nullable draft fields to legacy workbench defaults."""
 
     normalized = dict(value)
     for key in ("cover_path", "submitted_at", "publish_error"):
@@ -298,13 +298,13 @@ def create_app(settings: Optional[Settings] = None, initialize: bool = True) -> 
         except WeChatAdapterError as exc:
             raise ConnectorError(str(exc)) from exc
 
-    # ContentPilot compatibility surface.  These routes deliberately use the
-    # real browser adapter directly, so the single-page ContentPilot workbench
+    # legacy workbench compatibility surface.  These routes deliberately use the
+    # real browser adapter directly, so the single-page legacy workbench
     # never turns the local mock connector into a false account or publish
     # success.  CreatorOS's existing connector routes remain available for its
     # own API clients and regression tests.
     @app.get("/api/v1/account")
-    def contentpilot_account() -> dict[str, object]:
+    def legacy_account() -> dict[str, object]:
         try:
             account = WeChatBrowserAdapter(resolved).whoami()
             return {
@@ -326,25 +326,25 @@ def create_app(settings: Optional[Settings] = None, initialize: bool = True) -> 
             }
 
     @app.post("/api/v1/account/login")
-    def contentpilot_account_login() -> dict[str, str]:
+    def legacy_account_login() -> dict[str, str]:
         try:
             return WeChatBrowserAdapter(resolved).start_or_check_login()
         except WeChatAdapterError as exc:
             return {"state": "error", "message": str(exc)}
 
     @app.get("/api/v1/account/login/status")
-    def contentpilot_account_login_status() -> dict[str, str]:
+    def legacy_account_login_status() -> dict[str, str]:
         try:
             return WeChatBrowserAdapter(resolved)._read_status()
         except WeChatAdapterError as exc:
             return {"state": "error", "message": str(exc)}
 
-    @app.get("/api/v1/drafts", response_model=list[ContentPilotDraftRead])
+    @app.get("/api/v1/drafts", response_model=list[LegacyDraftRead])
     def drafts(session: Session = Depends(db)) -> list[dict[str, object]]:
-        return [_contentpilot_draft(item) for item in list_drafts(session, resolved)]
+        return [_legacy_draft(item) for item in list_drafts(session, resolved)]
 
-    @app.post("/api/v1/drafts", response_model=ContentPilotDraftRead, status_code=201)
-    def draft_create(payload: ContentPilotDraftCreate, session: Session = Depends(db)) -> dict[str, object]:
+    @app.post("/api/v1/drafts", response_model=LegacyDraftRead, status_code=201)
+    def draft_create(payload: LegacyDraftCreate, session: Session = Depends(db)) -> dict[str, object]:
         created = create_draft(
             session,
             resolved,
@@ -355,7 +355,7 @@ def create_app(settings: Optional[Settings] = None, initialize: bool = True) -> 
                 content_html=payload.content_html,
             ),
         )
-        # ContentPilot stores the path supplied by its editor.  Keep the same
+        # legacy workbench stores the path supplied by its editor.  Keep the same
         # value for display and let the real adapter validate it at publish
         # time; CreatorOS's upload endpoint remains the safe local alternative.
         if payload.cover_path:
@@ -364,11 +364,11 @@ def create_app(settings: Optional[Settings] = None, initialize: bool = True) -> 
                 item.cover_path = payload.cover_path
                 item.updated_at = datetime.now(timezone.utc)
                 session.commit()
-                return _contentpilot_draft(draft_read(item, resolved))
-        return _contentpilot_draft(created)
+                return _legacy_draft(draft_read(item, resolved))
+        return _legacy_draft(created)
 
     @app.post("/api/v1/drafts/{draft_id}/publish")
-    def contentpilot_publish(draft_id: str, session: Session = Depends(db)) -> dict[str, object]:
+    def legacy_publish(draft_id: str, session: Session = Depends(db)) -> dict[str, object]:
         item = session.get(Draft, draft_id)
         if item is None:
             raise DraftNotFound("文章草稿不存在")
@@ -407,7 +407,7 @@ def create_app(settings: Optional[Settings] = None, initialize: bool = True) -> 
         return {"success": True, "media_id": item.remote_id or ""}
 
     @app.get("/api/v1/analytics")
-    def contentpilot_analytics() -> dict[str, object]:
+    def legacy_analytics() -> dict[str, object]:
         try:
             return WeChatBrowserAdapter(resolved).fetch_stats()
         except WeChatAdapterError as exc:

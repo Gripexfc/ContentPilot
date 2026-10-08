@@ -1,8 +1,8 @@
-# ContentPilot 严格功能对齐记录
+# 对照实现 严格功能对齐记录
 
 日期：2026-10-01（Asia/Shanghai）
 
-本轮按 `/Users/fc/Desktop/随波逐流/ContentPilot` 作为唯一产品基准，收缩 CreatorOS 的默认可见功能范围。目标是复现原项目的单页公众号编辑台，而不是继续扩展为多平台内容运营系统。
+本轮按 `对照目录` 作为唯一产品基准，收缩 CreatorOS 的默认可见功能范围。目标是复现对照实现的单页公众号编辑台，而不是继续扩展为多平台内容运营系统。
 
 ## 已对齐
 
@@ -19,4 +19,4 @@
 - 真实公众号登录、封面上传、草稿写入和后台数据读取仍需要 Playwright、管理员扫码和公众号后台会话；本轮没有伪造外部成功。
 - 真实 LLM、研究采集、图片/视频生成和质量门禁不属于参考项目能力，也没有被标记为已实现。
 
-修改前文件备份位于 `/private/tmp/creatoros-before-contentpilot-restore-20261001/`。
+修改前文件备份位于 `/private/tmp/creatoros-before-baseline-module-restore-20261001/`。

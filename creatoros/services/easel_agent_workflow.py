@@ -327,7 +327,7 @@ class EaselAgentWorkflowService(WorkflowService):
         project = f"outputs/workflow-{job['id']}"
         base = (
             "你正在 CreatorOS 中执行 Easel/OpenClaw 原生工作流。必须读取当前 runtime workspace 的 "
-            "AGENTS.md、SOUL.md 和目标 SKILL.md；不要使用随波逐流、ContentPilot 或 compact-v2 规则。"
+            "AGENTS.md、SOUL.md 和目标 SKILL.md；不要使用旧版工作区或 compact-v2 规则。"
             "允许调用 Skill 要求的检索、脚本、浏览器和渲染工具；禁止发布到任何平台，生成结果统一保持 draft。\n"
             f"主题：{job['topic']}\n账号画像：{job.get('profile') or '通用'}\n"
         )

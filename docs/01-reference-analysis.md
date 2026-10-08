@@ -1,4 +1,4 @@
-# ContentPilot 参考项目分析
+# 对照实现分析
 
 日期：2026-09-29（Asia/Shanghai）。结论来自本轮本地静态审阅，未执行真实账号操作。
 
@@ -6,7 +6,7 @@
 
 | 项目 | 当前核查结果 |
 | --- | --- |
-| 路径 | `/Users/fc/Desktop/随波逐流/ContentPilot` |
+| 路径 | `对照目录` |
 | 分支 / HEAD | `main` / `0e9e9dd2880227802843c24c5cce2fe0ed4772fe` |
 | 工作区 | 审阅开始时 `git status --short` 无变更 |
 | Git 远端 | 未配置远端 |
@@ -31,7 +31,7 @@ DESIGN 把产品定义成安静的编辑室：文章占主要空间，旁侧显�
 | 层 | 当前实现 | 可以提取的思路 |
 | --- | --- | --- |
 | 前端 | React + TypeScript + Vite；一个 App.tsx，少量 useState/useEffect | 使用类型化前端；文章与下一步放在同一工作上下文 |
-| API | FastAPI，`contentpilot/api/app.py` 内集中定义 | 后端统一校验、前端通过 API 访问 |
+| API | FastAPI，`baseline-module/api/app.py` 内集中定义 | 后端统一校验、前端通过 API 访问 |
 | 领域 | Pydantic Draft / DraftCreate / AccountStatus | 平台状态与文章数据分别建模 |
 | 存储 | 每篇草稿一个 JSON 文件，进程内线程锁 | 本地可持久化、可恢复；CreatorOS 改为事务型 SQLite |
 | 外部平台 | WeChatAdapter 封装浏览器登录、后台请求、数据解析 | 平台细节放到适配器内；不能把此实现视作官方 API |
@@ -66,7 +66,7 @@ DESIGN 把产品定义成安静的编辑室：文章占主要空间，旁侧显�
 
 | 证据 | 观察 | CreatorOS 对策 |
 | --- | --- | --- |
-| `web/frontend/src/App.tsx:41–47`；`contentpilot/api/app.py` | 已有草稿保存分支只返回前端 active 对象，没有请求后端 | 每次保存生成持久化修订；成功后回读并展示 revision；刷新/重启验收 |
+| `web/frontend/src/App.tsx:41–47`；`baseline-module/api/app.py` | 已有草稿保存分支只返回前端 active 对象，没有请求后端 | 每次保存生成持久化修订；成功后回读并展示 revision；刷新/重启验收 |
 | `web/frontend/src/api.ts:19–32`；`web/frontend/vite.config.ts` | API 使用相对路径，Vite 仅设置端口，未配置 `/api` 代理 | 开发代理与生产同源服务都纳入烟测 |
 | `App.tsx:55–61`；`integrations/wechat.py:start_login/whoami` | 登录线程启动后立即进行另一会话检查，缺少完整轮询交互 | 长操作返回 job_id；查询本地作业，不重复打开同一会话 |
 | `integrations/wechat.py:_parse_stats` | 缺失字段常被转为 0；解析异常被忽略 | null、原生零值、解析失败分开；保留导入行和错误 |
@@ -76,11 +76,11 @@ DESIGN 把产品定义成安静的编辑室：文章占主要空间，旁侧显�
 | `App.tsx:91–95,125` | 部分导航和“查看全部”没有页面行为 | 首个切片只暴露已可用入口，其余标明后续阶段 |
 | `tests/test_api.py`、`tests/test_repository.py` | 仅 2 个基础测试；无前端或真实平台测试 | 建立领域、数据库/API、组件和端到端四层必要测试 |
 
-静态资源路径经计算为正确的 `ContentPilot/web/frontend/dist`；不把它列为缺陷。存在真实浏览器调用代码不代表真实登录、草稿提交或统计读取已通过验收。
+静态资源路径经计算为正确的 `对照实现/web/frontend/dist`；不把它列为缺陷。存在真实浏览器调用代码不代表真实登录、草稿提交或统计读取已通过验收。
 
 ## 6. 产品差异清单
 
-| 能力 | ContentPilot 当前 | CreatorOS 目标 |
+| 能力 | 对照实现 当前 | CreatorOS 目标 |
 | --- | --- | --- |
 | 中心对象 | 一篇公众号草稿 | 创作者画像 + 任务 + 证据 + 独立平台产物 |
 | 画像 | 草稿 author 字段 | 版本、确认建议、差异、恢复、平台差异、真实经历与证据 |

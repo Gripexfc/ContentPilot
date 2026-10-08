@@ -1,8 +1,8 @@
 # CreatorOS 修复浏览器验收记录
 
-日期：2026-10-01（Asia/Shanghai）  
-浏览器：Ego Lite TaskSpace 2（沿用既有空间；p1=ContentPilot，p2=CreatorOS）  
-CreatorOS：`http://127.0.0.1:18310`  
+日期：2026-10-01（Asia/Shanghai）
+浏览器：Ego Lite TaskSpace 2（沿用既有空间；p1=对照实现，p2=CreatorOS）
+CreatorOS：`http://127.0.0.1:18310`
 数据：`/private/tmp/creatoros-ui-20261001-repair`（隔离目录，未触碰 CreatorOS/data）
 
 ## 复现与结果

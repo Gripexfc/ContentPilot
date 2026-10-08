@@ -1,13 +1,13 @@
 # Git 基线功能核对与本轮补齐
 
-核对日期：2026-09-30（Asia/Shanghai）  
-参考目录：`/Users/fc/Desktop/随波逐流/ContentPilot`  
-参考 Git 基线：`main` / `0e9e9dd2880227802843c24c5cce2fe0ed4772fe`  
+核对日期：2026-09-30（Asia/Shanghai）
+参考目录：`对照目录`
+参考 Git 基线：`main` / `0e9e9dd2880227802843c24c5cce2fe0ed4772fe`
 参考仓库状态：工作树干净，没有配置远程地址；`git ls-files` 未发现项目级 `LICENSE` 或 `NOTICE`。CreatorOS 没有复制参考仓库代码、提示词、素材、用户数据或凭据。
 
 ## 参考项目实际能力
 
-ContentPilot 的 README、PRODUCT、DESIGN、API、模型、适配器和测试共同证明了一个“公众号单平台草稿工作台”：
+对照实现 的 README、PRODUCT、DESIGN、API、模型、适配器和测试共同证明了一个“公众号单平台草稿工作台”：
 
 | 能力 | 参考项目实际状态 | CreatorOS 对应状态 |
 | --- | --- | --- |
@@ -55,5 +55,5 @@ API/前端自动检查：后端 10 passed、前端 2 passed、TypeScript typeche
 
 ## 回滚
 
-代码回退到本轮前版本时，数据库需要同时回退 Alembic 到 `0003_sources_metrics`；本轮新增的 `task_inputs.metadata_json` 不能只删文件。验收数据使用隔离目录，可直接删除 `/tmp/creatoros-audit-20260930/app-data`；默认数据回退前先复制 `CreatorOS/data/creatoros.sqlite3`。本轮没有修改 ContentPilot 或 `.easel`。
+代码回退到本轮前版本时，数据库需要同时回退 Alembic 到 `0003_sources_metrics`；本轮新增的 `task_inputs.metadata_json` 不能只删文件。验收数据使用隔离目录，可直接删除 `/tmp/creatoros-audit-20260930/app-data`；默认数据回退前先复制 `CreatorOS/data/creatoros.sqlite3`。本轮没有修改 对照实现 或 `.easel`。
 

@@ -4,18 +4,18 @@
 
 ## 修改文件
 
-本轮只在新目录 `/Users/fc/Desktop/随波逐流/CreatorOS` 新增设计文档：
+本轮只在新目录 `CreatorOS` 新增设计文档：
 
 - `README.md`：项目状态、阅读顺序、下一切片和未启动说明。
 - `PRODUCT.md`：产品任务、需求拆分、画像、任务、三平台、热点、分析、记忆和边界。
 - `DESIGN.md`：FastAPI + React/Vite + SQLite 架构、目录、数据流、页面、适配器、安全和失败恢复。
-- `docs/01-reference-analysis.md`：ContentPilot 源码/模型/API/测试/许可证核查、差异和可复用思路。
+- `docs/01-reference-analysis.md`：对照实现 源码/模型/API/测试/许可证核查、差异和可复用思路。
 - `docs/02-data-and-api.md`：核心表、版本与溯源关系、平台 DTO、接口草案和冲突规则。
 - `docs/03-delivery-plan.md`：S1–S6 切片、验收、验证、外部限制和回滚。
 - `docs/04-provenance-and-licenses.md`：当前参考仓库的许可证证据边界和 CreatorOS 登记规则。
 - 本文件：本轮交付、检查与状态。
 
-没有修改 `/Users/fc/Desktop/随波逐流/ContentPilot`、`.easel`、公众号/小红书/掘金内容目录或任何凭据。
+没有修改 `对照目录`、`.easel`、公众号/小红书/掘金内容目录或任何凭据。
 
 ## 数据模型与接口
 
@@ -23,12 +23,12 @@
 
 ## 已执行检查
 
-- 逐文件阅读 ContentPilot README、PRODUCT、DESIGN、迁移边界、后端/前端目录、模型、存储、API、适配器、测试、依赖和配置。
-- `git -C /Users/fc/Desktop/随波逐流/ContentPilot status --short --branch`：审阅开始时工作区干净，分支 `main`。
+- 逐文件阅读 对照实现 README、PRODUCT、DESIGN、迁移边界、后端/前端目录、模型、存储、API、适配器、测试、依赖和配置。
+- `git -C 对照目录 status --short --branch`：审阅开始时工作区干净，分支 `main`。
 - `git ... ls-files`：31 个跟踪文件；未发现项目级 LICENSE/NOTICE。
 - 解析 API 路由、Pydantic 模型、前端导出函数、测试函数和 npm 锁文件许可证元数据。
 - `python3 ./.trellis/scripts/get_context.py --mode packages`：父工作区识别为 single-repo，backend/frontend spec layers；已读取 shared/backend/frontend 相关规范。
-- 未运行 ContentPilot 或 CreatorOS 的安装、构建、测试、服务、浏览器、模型、热点或平台连接器。
+- 未运行 对照实现 或 CreatorOS 的安装、构建、测试、服务、浏览器、模型、热点或平台连接器。
 
 ## 启动与测试
 

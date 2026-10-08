@@ -1,17 +1,17 @@
-# CreatorOS × ContentPilot 功能差异矩阵
+# CreatorOS × 对照实现 功能差异矩阵
 
-核对日期：2026-09-30（Asia/Shanghai）  
-参考项目：`/Users/fc/Desktop/随波逐流/ContentPilot`（Git `0e9e9dd2880227802843c24c5cce2fe0ed4772fe`）  
-目标项目：`/Users/fc/Desktop/随波逐流/CreatorOS`
+核对日期：2026-09-30（Asia/Shanghai）
+参考项目：`对照目录`（Git `0e9e9dd2880227802843c24c5cce2fe0ed4772fe`）
+目标项目：`CreatorOS`
 
-这份矩阵只记录能在源码、迁移、测试或本地运行结果中定位的事实。ContentPilot 目录保持只读；CreatorOS 的扩展能力不会通过复制参考代码实现。
+这份矩阵只记录能在源码、迁移、测试或本地运行结果中定位的事实。对照实现 目录保持只读；CreatorOS 的扩展能力不会通过复制参考代码实现。
 
 ## 参考项目能力基线
 
-| 能力 | ContentPilot 证据 | 目标行为 | CreatorOS 当前状态 | 差异/动作 |
+| 能力 | 对照实现 证据 | 目标行为 | CreatorOS 当前状态 | 差异/动作 |
 | --- | --- | --- | --- | --- |
 | 本地内容工作台 | `PRODUCT.md`；`web/frontend/src/App.tsx` | 在本机管理可恢复内容 | 已有总览、工作台、内容库、记忆页 | 保留并统一 shell 视觉；不复用参考布局 |
-| 内容库 | `contentpilot/storage/repository.py` 的 JSON 草稿仓 | 任务、版本、来源可检索 | SQLite `content_tasks`、`briefs`、`platform_artifacts`、revision 链 | CreatorOS 是扩展实现；保留导出与回读 |
+| 内容库 | `baseline-module/storage/repository.py` 的 JSON 草稿仓 | 任务、版本、来源可检索 | SQLite `content_tasks`、`briefs`、`platform_artifacts`、revision 链 | CreatorOS 是扩展实现；保留导出与回读 |
 | 公众号账号状态 | `api/app.py`：`GET /api/v1/account`、`/account/login/status` | 明确区分未配置、已连接、读取成功 | 仅设置页静态显示“未连接” | 当前缺口：本地连接器状态 API；真实登录保持未接入 |
 | 登录触发 | `POST /api/v1/account/login`；`integrations/wechat.py` | 只在用户点击时打开登录流程 | 无对应入口 | 补 Mock Connector 的显式连接动作；不伪造真实登录 |
 | 草稿创建/读取/编辑 | `DraftCreate`、`POST/GET /api/v1/drafts` | 保存标题、摘要、作者、正文 HTML、封面和状态 | SQLite `wechat_drafts`，支持本地保存/回读/复制 | 已实现本地草稿中心；真实微信写接口仍未接入 |
@@ -21,7 +21,7 @@
 | 基础账号数据读取 | `GET /api/v1/analytics`；`fetch_stats()` | 明确读取触发、无数据不造增长率 | CSV/JSON 指标导入 + 描述性摘要 | 已有本地数据路径；官方 API 仍待接入 |
 | SQLite 持久化 | 参考项目为 JSON 文件，并无 SQLite 模型 | 目标使用 SQLite + 迁移 | Alembic `0001`–`0004`、SQLite WAL | CreatorOS 扩展并符合本地优先约束 |
 | 前后端 API | FastAPI 路由与 React API client | 单一契约、错误可恢复 | FastAPI + TypeScript client | 保留；后续补连接器契约 |
-| 测试 | `ContentPilot/tests` 覆盖 scope/repository | 每个切片有 API/服务/前端验证 | 后端 11 passed；前端 2 passed；typecheck/build 通过 | 新增连接器和视觉状态测试 |
+| 测试 | `对照实现/tests` 覆盖 scope/repository | 每个切片有 API/服务/前端验证 | 后端 11 passed；前端 2 passed；typecheck/build 通过 | 新增连接器和视觉状态测试 |
 
 ## CreatorOS 产品扩展（参考项目没有）
 
@@ -54,7 +54,7 @@
 * 新增本地 `connector_states` 表与 Mock Connector API，区分 `not_configured → configured → connected → read_succeeded → submit_succeeded → publish_succeeded`，失败保留 `failed` 和错误码；不触发外部平台。
 * 设置页读取真实状态并提供显式连接、读取、提交测试和失败重试；所有动作写本地审计记录。
 
-明确不做：真实扫码、公众号后台请求、自动登录、自动发布/群发、ContentPilot 或 `.easel` 修改、LLM/图片/视频生成。
+明确不做：真实扫码、公众号后台请求、自动登录、自动发布/群发、对照实现 或 `.easel` 修改、LLM/图片/视频生成。
 
 回滚时删除 `0005_connector_states` 迁移和连接器路由/组件，数据库回退到 `0004_input_metadata`；前端 token 变更可独立回退，不影响既有业务表。
 

@@ -1,8 +1,8 @@
 # CreatorOS SaaS 可用性审计
 
-审计日期：2026-10-02（Asia/Shanghai）  
-审计范围：`CreatorOS/` 当前源码、路由、API、模型、运行时配置、前端生成/保存/反馈链，以及隔离临时数据目录中的可复现 API 探针。  
-本文前半部分保留 2026-10-02 初始审计基线；后半部分记录同日完成的首批窄切片实现。未修改 `vendor/easel/` 或外部参考项目。
+审计日期：2026-10-02（Asia/Shanghai）
+审计范围：`CreatorOS/` 当前源码、路由、API、模型、运行时配置、前端生成/保存/反馈链，以及隔离临时数据目录中的可复现 API 探针。
+本文前半部分保留 2026-10-02 初始审计基线；后半部分记录同日完成的首批窄切片实现。未修改 `vendor/easel/` 或外部对照实现。
 
 首批实施边界、跨层契约和验收步骤另见 [`docs/29-quick-create-persistence-plan-2026-10-02.md`](29-quick-create-persistence-plan-2026-10-02.md)。
 
@@ -17,7 +17,7 @@ CreatorOS 仍是“有可靠本地骨架的内容工作台原型”，但首批�
 - `creatoros/api/`：FastAPI 应用、旧 `/api/v1` 业务路由和 Easel 兼容桥接。
 - `creatoros/domain/`、`creatoros/db/`、`creatoros/services/`：画像、任务、简报、平台产物、记忆、热点、指标、连接器和公众号草稿的契约、SQLite 模型与业务服务。
 - `web/frontend/src/`：React + TypeScript 页面；当前主入口由 `App.tsx` 挂载。
-- `vendor/easel/`：迁移进来的运行时、Skill 目录、对话、模型设置和六阶段工作流；它不是本轮的外部参考项目，当前 CreatorOS 会加载其中的 Web 运行时。外部 ContentPilot 参考项目仍保持只读。
+- `vendor/easel/`：迁移进来的运行时、Skill 目录、对话、模型设置和六阶段工作流；它不是本轮的外部对照实现，当前 CreatorOS 会加载其中的 Web 运行时。外部对照实现仍保持只读。
 - `data/` 与 `runtime/`：本地 SQLite/资产和隔离的 OpenClaw 会话、作业、产物；真实凭据不应写入仓库。
 - `tests/`、`docs/`：后端/前端验证与阶段交付、差异矩阵、验收证据。
 

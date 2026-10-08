@@ -28,10 +28,10 @@
 验证命令：
 
 ```bash
-cd /Users/fc/Desktop/随波逐流/CreatorOS/web/frontend
+cd CreatorOS/web/frontend
 npm run typecheck
 npm run build
 
-cd /Users/fc/Desktop/随波逐流/CreatorOS
+cd CreatorOS
 .venv/bin/pytest -q
 ```

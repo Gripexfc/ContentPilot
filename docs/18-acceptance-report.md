@@ -1,6 +1,6 @@
 # 当前验收报告
 
-日期：2026-10-01（Asia/Shanghai）  
+日期：2026-10-01（Asia/Shanghai）
 阶段：第一阶段审计完成；总览/工作台第一条 UX 垂直切片完成本地验证。
 
 ## 修改文件
@@ -18,7 +18,7 @@
 
 - CreatorOS Python：`16 passed`（项目 `.venv/bin/pytest -q`）。
 - 前端：`npm run typecheck` 通过；Vitest `4 passed`；Vite `npm run build` 通过。
-- ContentPilot 只读基线：Python `2 passed`（使用 CreatorOS 环境加 `PYTHONPATH`）；前端 `npm run build` 通过；`git status` 干净。
+- 对照实现 只读基线：Python `2 passed`（使用 CreatorOS 环境加 `PYTHONPATH`）；前端 `npm run build` 通过；`git status` 干净。
 - 本切片没有启动真实平台登录、LLM、热点采集、账号 API、微信后台提交、朱雀检测或媒体渲染；本轮 AI 浏览器对照证据另见 docs/evidence/2026-10-01-ai-browser-parity/。
 
 ## 完成/Mock/未实现/外部限制
@@ -32,21 +32,21 @@
 
 ## 回滚快照与下一条切片
 
-CreatorOS 当前目录没有独立 Git 元数据；本次回滚清单和 SHA-256 见 `docs/evidence/2026-10-01/rollback-manifest.sha256`，只涉及上述 CreatorOS 文件。ContentPilot 的 Git HEAD 未改动。下一条垂直切片是“主题/链接/文本/文件/热点 → 研究证据账本 → 可编辑简报差异”，完成前继续保持模板回退和外部能力分层。
+CreatorOS 当前目录没有独立 Git 元数据；本次回滚清单和 SHA-256 见 `docs/evidence/2026-10-01/rollback-manifest.sha256`，只涉及上述 CreatorOS 文件。对照实现 的 Git HEAD 未改动。下一条垂直切片是“主题/链接/文本/文件/热点 → 研究证据账本 → 可编辑简报差异”，完成前继续保持模板回退和外部能力分层。
 ## AI 浏览器对照验收（2026-10-01）
 
-使用同一 TaskSpace（2）和同一 QA 输入，对 ContentPilot（p1）与 CreatorOS（p2）进行了真实 Ego Lite 页面操作；证据保存在 docs/evidence/2026-10-01-ai-browser-parity/。
+使用同一 TaskSpace（2）和同一 QA 输入，对 对照实现（p1）与 CreatorOS（p2）进行了真实 Ego Lite 页面操作；证据保存在 docs/evidence/2026-10-01-ai-browser-parity/。
 
 - CreatorOS 已走通主题 → 简报 → 确认 → 三平台模板 → 本地公众号草稿 → 编辑保存/刷新 → 封面校验 → Mock 失败/刷新/重试；有效 PNG 成功、无效文件被明确拒绝。
 - CreatorOS 设置、工作台、热点和分析页明确标记“演示模板 · 未连接 LLM”“RSS/官方源待接入”“官方 API 待接入”“真实 AI 生成尚未接入”；指标导入只做结构性分析。
-- ContentPilot 新建草稿可保存，但已有草稿编辑后刷新回旧值；这是原项目当前基线缺陷，不能把两边描述成已经完全一致。
-- ContentPilot 真实提交在隔离环境显示“公众号草稿提交失败：ModuleNotFoundError”；没有登录、扫码或真实提交证据。
+- 对照实现 新建草稿可保存，但已有草稿编辑后刷新回旧值；这是对照实现当前基线缺陷，不能把两边描述成已经完全一致。
+- 对照实现 真实提交在隔离环境显示“公众号草稿提交失败：ModuleNotFoundError”；没有登录、扫码或真实提交证据。
 
-因此，本轮结论是：**CreatorOS 本地流程通过，真实外部能力和高质量内容能力不通过/未接入，不能称为原项目真实能力的等价替代，也不能称为高质量成稿或越用越强。**
+因此，本轮结论是：**CreatorOS 本地流程通过，真实外部能力和高质量内容能力不通过/未接入，不能称为对照实现真实能力的等价替代，也不能称为高质量成稿或越用越强。**
 
 ## 现有功能对齐修复（2026-10-01）
 
-本轮只修改 CreatorOS；ContentPilot、`.easel` 和用户内容未改动。修改前文件 SHA-256 清单和本轮截图位于 `docs/evidence/2026-10-01-repair/`。CreatorOS 没有独立 Git 元数据，未伪造提交。
+本轮只修改 CreatorOS；对照实现、`.easel` 和用户内容未改动。修改前文件 SHA-256 清单和本轮截图位于 `docs/evidence/2026-10-01-repair/`。CreatorOS 没有独立 Git 元数据，未伪造提交。
 
 ### 已修复并验证
 
@@ -68,7 +68,7 @@ CreatorOS 当前目录没有独立 Git 元数据；本次回滚清单和 SHA-256
 
 - 后端：`.venv/bin/pytest -q`，**15 passed**；覆盖 B1 失败事件、B5 跨任务记忆采纳/撤销、0008 迁移幂等和 browser 适配器不冒充连接成功。
 - 前端：`npm test -- --run`（4 passed）、`npm run typecheck`、`npm run build` 均通过。
-- AI 浏览器：续用 Ego Lite TaskSpace 2（p1 ContentPilot、p2 CreatorOS），隔离数据目录 `/private/tmp/creatoros-ui-20261001-repair`，服务端口 18310。实际完成主题→简报→确认→三平台模板→本地草稿→编辑读取→无效/有效封面→未配置提交失败即时刷新→配置/连接/读取→Mock 失败/重试→跨任务记忆应用/撤销；截图在 `docs/evidence/2026-10-01-repair/screens/`，步骤和回执在同目录 `browser-results.md`。
+- AI 浏览器：续用 Ego Lite TaskSpace 2（p1 对照实现、p2 CreatorOS），隔离数据目录 `/private/tmp/creatoros-ui-20261001-repair`，服务端口 18310。实际完成主题→简报→确认→三平台模板→本地草稿→编辑读取→无效/有效封面→未配置提交失败即时刷新→配置/连接/读取→Mock 失败/重试→跨任务记忆应用/撤销；截图在 `docs/evidence/2026-10-01-repair/screens/`，步骤和回执在同目录 `browser-results.md`。
 - 视口复核：390、1024、1440；截图分别为 `analytics-390.png`、`analytics-1024.png`、`settings-1440.png`、`draft-failed-1440.png`、`draft-submitted-1440.png`。
 
 ### 仍未实现或未授权

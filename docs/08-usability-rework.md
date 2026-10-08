@@ -18,4 +18,4 @@
 
 验证结果：后端 `8 passed`；前端 `2 passed`、TypeScript typecheck 通过、Vite build 通过。浏览器验收覆盖总览、画像、内容工作台、内容库、能力记忆和设置页；热点与账号分析明确显示“未接入”，没有用假数据填充。当前 S3 仍使用本地确定性模板，不声称接入真实 LLM、图片生成或视频渲染。
 
-回滚方式：停止本地服务后，将 `/tmp/creatoros-before-s3-usability.tar.gz` 解压到独立临时目录比对；数据库备份为 `/tmp/creatoros-before-s3-usability.sqlite3`。不要覆盖 `ContentPilot` 或 `.easel`，也不要把本地数据库备份提交进仓库。
+回滚方式：停止本地服务后，将 `/tmp/creatoros-before-s3-usability.tar.gz` 解压到独立临时目录比对；数据库备份为 `/tmp/creatoros-before-s3-usability.sqlite3`。不要覆盖 `对照实现` 或 `.easel`，也不要把本地数据库备份提交进仓库。

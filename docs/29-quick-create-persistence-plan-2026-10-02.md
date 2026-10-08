@@ -35,7 +35,7 @@
 - 不把六阶段 Markdown 自动转换成 `PlatformArtifact`，不自动确认 Brief，不伪造作者经历、事实来源或平台字段。
 - 不实现图片 provider、视频生成、媒体尺寸/版权校验或媒体预览；“配图”仍必须在生成前显示未接入/阻断状态。
 - 不接入真实平台登录、二维码/OAuth、草稿提交、发布、指标读取或生产部署。
-- 不重构 `vendor/easel/web/app.py`，不修改外部 ContentPilot 参考项目。
+- 不重构 `vendor/easel/web/app.py`，不修改外部对照实现。
 - 不在本切片补齐完整画像编辑、研究账本、指标反馈和长期记忆确认；这些属于后续独立切片。
 
 ## 跨层契约
@@ -84,7 +84,7 @@ API 层负责校验长度、枚举、ID 格式和 JSON 形状；服务层负责�
 - `web/frontend/src/api.ts`、`QuickCreatePage.tsx`、`StudioLibraryPage.tsx`：服务端保存/读取、未同步恢复、状态文案和“继续工作台”入口。
 - `tests/test_api.py`、`tests/test_easel_parity.py`、新增 `web/frontend/src/lib/quickDraft.test.ts`：覆盖幂等、冲突、阻断和回读。
 
-不应修改 `vendor/easel/`、外部参考项目、平台连接器和媒体 provider。
+不应修改 `vendor/easel/`、外部对照实现、平台连接器和媒体 provider。
 
 ## 验收步骤
 
